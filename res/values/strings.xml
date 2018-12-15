@@ -2,6 +2,9 @@
 <resources>
 
     <string name="app_name">看看天气</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="weather_forecast">天气预报</string>
+ <string name="weather_aqi">空气质量</string>
+ <string name="weather_aqi_number">AQI指数</string>   
+  <string name="weather_aqi_pm25_number">PM2.5指数</string> 
+   <string name="weather_suggestion_text">生活建议</string> 
 </resources>
