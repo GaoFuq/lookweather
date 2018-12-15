@@ -17,14 +17,19 @@ import com.lookweather.android.util.Utility;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -41,8 +46,14 @@ public class WeatherActivity extends Activity {
 	 * 
 	 * (@#$%^&*....)
 	 */
-	private String getedWeatherId = null;//我添加的代码
-	public static String currentWeatherId = null;//我添加的代码
+	//private String getedWeatherId = null;//我添加的代码
+	//public static String currentWeatherId = null;//我添加的代码
+	
+	public SwipeRefreshLayout refreshLayout;
+	
+	public DrawerLayout drawerLayout;
+	
+	private Button bt_nav;
 	
 	private ScrollView weatherLayout;
 
@@ -72,7 +83,7 @@ public class WeatherActivity extends Activity {
 		// 初始化控件
 		initView();
 
-		getedWeatherId = getIntent().getStringExtra("weather_id");//我添加的代码
+		//getedWeatherId = getIntent().getStringExtra("weather_id");//我添加的代码
 
 		// 读取数据
 		readData();
@@ -81,39 +92,38 @@ public class WeatherActivity extends Activity {
 	private void readData() {
 		
 		// TODO Auto-generated method stub
-		if (getedWeatherId.equals(currentWeatherId)) {//我添加的代码
+		//if (getedWeatherId.equals(currentWeatherId)) {//我添加的代码
 			SharedPreferences sharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(this);
-			String weatherString = sharedPreferences.getString(
-					"WeatherId", null);
 			String bingPic=sharedPreferences.getString("bing_pic", null);
 			if(bingPic!=null){
 				Glide.with(this).load(bingPic).into(bingPicImg);
 			}else{
 				loadBingPic();
 			}
+			String weatherString = sharedPreferences.getString(
+					"WeatherId", null);
+			final String weatherId;
 			if (weatherString != null) {
 				// 有缓存时，直接解析缓存的数据
 				Weather weather = Utility.handleWeatherResponse(weatherString);
-				Log.d("缓存的weatherId", weather.basic.weatherId);
-				Log.d("readWeather", weather.basic.cityName);
+				weatherId=weather.basic.weatherId;
 				showWeatherInfo(weather);
-//			} else {
-//				// 无缓存时去服务器查询
-//				// currentWeatherId = getIntent().getStringExtra("weather_id");
-//				Log.d("得到的weatherId", currentWeatherId);
-//				weatherLayout.setVisibility(View.INVISIBLE);
-//				requestWeather(currentWeatherId);
+			} else {
+				// 无缓存时去服务器查询
+				weatherId = getIntent().getStringExtra("weather_id");
+			//	Log.d("得到的weatherId", currentWeatherId);
+				weatherLayout.setVisibility(View.INVISIBLE);
+				requestWeather(weatherId);
 			}
-		} else {
-			
-			// 无缓存时去服务器查询
-			// currentWeatherId = getIntent().getStringExtra("weather_id");
-			//Log.d("得到的weatherId", currentWeatherId);
-			weatherLayout.setVisibility(View.INVISIBLE);
-			requestWeather(getedWeatherId);
-			currentWeatherId=getedWeatherId;//我添加的代码
-		}
+			refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				
+				@Override
+				public void onRefresh() {
+					// TODO Auto-generated method stub
+					requestWeather(weatherId);
+				}
+			});
 	}
 
 	
@@ -153,12 +163,12 @@ public class WeatherActivity extends Activity {
 	/*
 	 * 根据天气weatherId查询天气数据
 	 */
-	private void requestWeather(final String WeatherId) {
+	void requestWeather(final String weatherId) {
 		// TODO Auto-generated method stub
 		// currentWeatherId=WeatherId;
-		Log.d("final weatherId", WeatherId);
+		
 		String weatherUrl = "http://guolin.tech/api/weather?cityid="
-				+ WeatherId + "&key=76738de3c18241459c3e1a85e6ce975d";
+				+ weatherId + "&key=76738de3c18241459c3e1a85e6ce975d";
 		HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
 
 			@Override
@@ -185,10 +195,11 @@ public class WeatherActivity extends Activity {
 									Toast.LENGTH_SHORT).show();
 
 						}
+						refreshLayout.setRefreshing(false);
 					}
 
 				});
-				loadBingPic();
+				
 			}
 
 			@Override
@@ -202,12 +213,12 @@ public class WeatherActivity extends Activity {
 						// TODO Auto-generated method stub
 						Toast.makeText(WeatherActivity.this, "获取天气信息失败",
 								Toast.LENGTH_SHORT).show();
-
+						refreshLayout.setRefreshing(false);
 					}
 				});
 			}
 		});
-
+		loadBingPic();
 	}
 
 	/*
@@ -272,6 +283,18 @@ public class WeatherActivity extends Activity {
 		carWashText = (TextView) findViewById(R.id.tv_weather_suggestion_car_wash_text);
 		sportText = (TextView) findViewById(R.id.tv_weather_suggestion_sport_text);
 		bingPicImg=(ImageView) findViewById(R.id.iv_bing_pic_img);
+		refreshLayout=(SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+		//refreshLayout.setColorSchemeResources(Color.WHITE, Color.YELLOW, Color.RED, Color.GREEN);
+		drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
+		bt_nav=(Button) findViewById(R.id.bt_nav);
+		bt_nav.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				drawerLayout.openDrawer(GravityCompat.START);
+			}
+		});
 	}
 
 	/**
