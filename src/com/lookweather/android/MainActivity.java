@@ -9,10 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class MainActivity extends Activity {
-	//
-	// private final int FIRST_OPEN_APP=0;
-	// private final int openedApp=1;
-	// private static int status=0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,6 +23,9 @@ public class MainActivity extends Activity {
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
+		/*
+		 * 当有缓存时，让应用一打开就显示缓存的天气信息
+		 */
 		if ((preferences.getString("weather", null)) != null) {
 			startActivity(new Intent(this, WeatherActivity.class));
 			finish();

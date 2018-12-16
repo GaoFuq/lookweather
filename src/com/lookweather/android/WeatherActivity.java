@@ -1,7 +1,7 @@
 package com.lookweather.android;
 
 import java.io.IOException;
-import java.util.Date;
+
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -17,7 +17,6 @@ import com.lookweather.android.util.Utility;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -38,17 +37,13 @@ import android.widget.Toast;
 
 public class WeatherActivity extends Activity {
 	/*
-	 * ¾­¹ı¼ì²é£¬´úÂëÎŞÎó¡£ µ«ÊÇ²âÊÔ½á¹ûÊÇÖ»ÓĞ¸Õ°²×°ºóµÚÒ»´ÎÔËĞĞ£¬²éÑ¯µÄÊı¾İ²ÅÊÇÆ¥ÅäµÄ£¬Ö®ºó²éÑ¯µÄÊı¾İ¶¼ÊÇµÚÒ»´Î²éµ½µÄ½á¹û¡£
-	 * 
-	 * ·¢ÏÖÎÊÌâ£¨¸öÈËµÄ¿´·¨£¬ËäÈ»ÊÇ¹ùÁØÀÏÊ¦µÄ½Ì²Ä£¬ÎÒ¾õµÃËûÕâÀï»¹ÊÇÓĞµãÎÊÌâµÄ£©
-	 * 
-	 * ÎÒ×Ô¼ºĞŞ¸ÄºÃÁË£¬È»ºó½Ó×Å¿´ºóÃæµÄ²Å·¢ÏÖÔ­À´Õâ¸ö¿ÓÊÇÒÑ¾­ÍÚºÃÁËµÄ¡£¡£¡£
-	 * 
-	 * (@#$%^&*....)
+	 * æ­¤å¤„æœ‰å‘ï¼Œä¸å¤šæäº†
 	 */
-	// private String getedWeatherId = null;//ÎÒÌí¼ÓµÄ´úÂë
-	// public static String currentWeatherId = null;//ÎÒÌí¼ÓµÄ´úÂë
 
+	//public String getedWeatherId =null;// æˆ‘æ·»åŠ çš„ä»£ç 
+
+	//public static String currentWeatherId = null;// æˆ‘æ·»åŠ çš„ä»£ç 
+	//private static String getedWeatherId;
 	public SwipeRefreshLayout refreshLayout;
 
 	public DrawerLayout drawerLayout;
@@ -63,6 +58,7 @@ public class WeatherActivity extends Activity {
 			aqiText, pm25Text, comfortText, carWashText, sportText;
 
 	private ImageView bingPicImg;
+	private String mWeatherId;//ä¿®å¤bug
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,63 +70,53 @@ public class WeatherActivity extends Activity {
 
 		if (Build.VERSION.SDK_INT >= 21) {
 			View decorView = getWindow().getDecorView();
-			// ÈÃ»î¶¯µÄ²¼¾ÖÏÔÊ¾ÔÚ×´Ì¬À¸ÉÏÃæ
 			decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
 					| View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-			// ½«×´Ì¬À¸ÉèÖÃ³ÉÍ¸Ã÷
-			// getWindow().setStatusBarColor(color.transparent);Ã»ÓĞÕâ¸ö·½·¨¡£ÒòÎªÎÒ¼Ì³ĞµÄÊÇActivity£¬²»ÊÇAppCompatActivity¡£
 		}
 
 		setContentView(R.layout.activity_weather);
 
-		// ³õÊ¼»¯¿Ø¼ş
 		initView();
-
-		// getedWeatherId = getIntent().getStringExtra("weather_id");//ÎÒÌí¼ÓµÄ´úÂë
-
-		// ¶ÁÈ¡Êı¾İ
-		readData();
-	}
-
-	private void readData() {
-
-		// TODO Auto-generated method stub
-		// if (getedWeatherId.equals(currentWeatherId)) {//ÎÒÌí¼ÓµÄ´úÂë
-		SharedPreferences sharedPreferences = PreferenceManager
+		
+		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		String bingPic = sharedPreferences.getString("bing_pic", null);
+		 String weatherString = prefs.getString("weather", null);
+		if (weatherString != null) {
+			// è¯»å–ç¼“å­˜ä¸­çš„æ•°æ®
+			Weather weather = Utility.handleWeatherResponse(weatherString);
+			mWeatherId = weather.basic.weatherId;
+			showWeatherInfo(weather);
+		} else {
+			// ä»æœåŠ¡å™¨æŸ¥è¯¢æ•°æ®
+			mWeatherId = getIntent().getStringExtra("weather_id");
+			weatherLayout.setVisibility(View.INVISIBLE);
+			requestWeather(mWeatherId);
+		}
+		refreshLayout
+				.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+					@Override
+					public void onRefresh() {
+						requestWeather(mWeatherId);
+					}
+				});
+		bt_nav.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				drawerLayout.openDrawer(GravityCompat.START);
+			}
+		});
+		String bingPic = prefs.getString("bing_pic", null);
 		if (bingPic != null) {
 			Glide.with(this).load(bingPic).into(bingPicImg);
 		} else {
 			loadBingPic();
 		}
-		String weatherString = sharedPreferences.getString("WeatherId", null);
-		final String weatherId;
-		if (weatherString != null) {
-			// ÓĞ»º´æÊ±£¬Ö±½Ó½âÎö»º´æµÄÊı¾İ
-			Weather weather = Utility.handleWeatherResponse(weatherString);
-			weatherId = weather.basic.weatherId;
-			showWeatherInfo(weather);
-		} else {
-			// ÎŞ»º´æÊ±È¥·şÎñÆ÷²éÑ¯
-			weatherId = getIntent().getStringExtra("weather_id");
-			// Log.d("µÃµ½µÄweatherId", currentWeatherId);
-			weatherLayout.setVisibility(View.INVISIBLE);
-			requestWeather(weatherId);
-		}
-		refreshLayout
-				.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
-					@Override
-					public void onRefresh() {
-						// TODO Auto-generated method stub
-						requestWeather(weatherId);
-					}
-				});
 	}
 
+	
+
 	/*
-	 * ¼ÓÔØ±ØÓ¦Ã¿ÈÕÒ»Í¼
+	 * åŠ è½½å¿…åº”æ¯æ—¥ä¸€å›¾
 	 */
 	private void loadBingPic() {
 		// TODO Auto-generated method stub
@@ -167,12 +153,10 @@ public class WeatherActivity extends Activity {
 	}
 
 	/*
-	 * ¸ù¾İÌìÆøweatherId²éÑ¯ÌìÆøÊı¾İ
+	 * æ ¹æ®weatherIdåˆ°æœåŠ¡å™¨æŸ¥è¯¢
 	 */
 	void requestWeather(final String weatherId) {
 		// TODO Auto-generated method stub
-		// currentWeatherId=WeatherId;
-
 		String weatherUrl = "http://guolin.tech/api/weather?cityid="
 				+ weatherId + "&key=76738de3c18241459c3e1a85e6ce975d";
 		HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
@@ -193,11 +177,13 @@ public class WeatherActivity extends Activity {
 							SharedPreferences.Editor editor = PreferenceManager
 									.getDefaultSharedPreferences(
 											WeatherActivity.this).edit();
-							editor.putString("WeatherId", responseText);
+
+							editor.putString("weather", responseText);
 							editor.apply();
+							mWeatherId = weather.basic.weatherId;
 							showWeatherInfo(weather);
 						} else {
-							Toast.makeText(WeatherActivity.this, "»ñÈ¡ÌìÆøĞÅÏ¢Ê§°Ü",
+							Toast.makeText(WeatherActivity.this, "è·å–å¤±è´¥",
 									Toast.LENGTH_SHORT).show();
 
 						}
@@ -217,7 +203,7 @@ public class WeatherActivity extends Activity {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						Toast.makeText(WeatherActivity.this, "»ñÈ¡ÌìÆøĞÅÏ¢Ê§°Ü",
+						Toast.makeText(WeatherActivity.this, "è·å–å¤±è´¥",
 								Toast.LENGTH_SHORT).show();
 						refreshLayout.setRefreshing(false);
 					}
@@ -228,18 +214,15 @@ public class WeatherActivity extends Activity {
 	}
 
 	/*
-	 * ´¦Àí²¢Õ¹Ê¾WeatherÊµÌåÀàÖĞµÄÊı¾İ
+	 * æ˜¾ç¤ºå¤©æ°”ä¿¡æ¯
 	 */
 	private void showWeatherInfo(Weather weather) {
-		if ((weather != null) && ("ok".equals(weather.status))) {
+		//if ((weather != null) && ("ok".equals(weather.status))) {
 			// TODO Auto-generated method stub
 			String cityName = weather.basic.cityName;
-			String updeTime = weather.basic.update.updateTime;// ?
-			String degree = weather.now.temperature + "¡ãC";
+			String updeTime = weather.basic.update.updateTime.split(" ")[1];
+			String degree = weather.now.temperature + "Â°C";
 			String weatherInfo = weather.now.more.info;
-			Log.d("cityName", cityName);
-			Log.d("updeTime", updeTime);
-			Log.d("degree", degree);
 			titleCity.setText(cityName);
 			titleUpdateTime.setText(updeTime);
 			degreeText.setText(degree);
@@ -267,9 +250,9 @@ public class WeatherActivity extends Activity {
 				aqiText.setText(weather.aqi.city.aqi);
 				pm25Text.setText(weather.aqi.city.pm25);
 			}
-			String comfort = "ÊæÊÊ¶È:" + weather.suggestion.comfort.info;
-			String carWash = "Ï´³µÖ¸Êı:" + weather.suggestion.carWash.info;
-			String sport = "ÔË¶¯Ö¸Êı:" + weather.suggestion.sport.info;
+			String comfort = "èˆ’é€‚åº¦:" + weather.suggestion.comfort.info;
+			String carWash = "æ´—è½¦æŒ‡æ•°:" + weather.suggestion.carWash.info;
+			String sport = "è¿åŠ¨æŒ‡æ•°:" + weather.suggestion.sport.info;
 			comfortText.setText(comfort);
 			carWashText.setText(carWash);
 			sportText.setText(sport);
@@ -277,13 +260,8 @@ public class WeatherActivity extends Activity {
 
 			Intent intent = new Intent(this, AutoUpdateService.class);
 			startService(intent);
-		} else {
-			Toast.makeText(WeatherActivity.this, "»ñÈ¡ÌìÆøĞÅÏ¢Ê§°Ü", Toast.LENGTH_SHORT)
-					.show();
-
-		}
-
-	}
+		} 
+	//}
 
 	private void initView() {
 		// TODO Auto-generated method stub
@@ -314,7 +292,5 @@ public class WeatherActivity extends Activity {
 			}
 		});
 	}
-
-	
 
 }

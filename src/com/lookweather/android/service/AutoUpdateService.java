@@ -34,7 +34,7 @@ public class AutoUpdateService extends Service {
 		updateWeather();
 		updateBingPic();
 		AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-		int anHour = 8 * 60 * 60 * 1000;// 8Ğ¡Ê±µÄºÁÃëÊı
+		int anHour = 8 * 60 * 60 * 1000;// 8å°æ—¶çš„æ¯«ç§’æ•°
 		long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
 		Intent in = new Intent(this, AutoUpdateService.class);
 		PendingIntent pendingIntent = PendingIntent.getService(this, 0, in, 0);
@@ -45,7 +45,7 @@ public class AutoUpdateService extends Service {
 	}
 
 	/*
-	 * ¸üĞÂ±ØÓ¦Ã¿ÈÕÒ»Í¼
+	 * æ›´æ–°å¿…åº”æ¯æ—¥ä¸€å›¾
 	 */
 	private void updateBingPic() {
 		// TODO Auto-generated method stub
@@ -74,7 +74,7 @@ public class AutoUpdateService extends Service {
 	}
 
 	/*
-	 * ¸üĞÂÌìÆøĞÅÏ¢
+	 * æ›´æ–°å¤©æ°”ä¿¡æ¯
 	 */
 	private void updateWeather() {
 		// TODO Auto-generated method stub
@@ -82,7 +82,7 @@ public class AutoUpdateService extends Service {
 				.getDefaultSharedPreferences(this);
 		String weatherString = preferences.getString("weather", null);
 		if (weatherString != null) {
-			// ÓĞ»º´æÊ±Ö±½Ó½âÎöÌìÆøÊı¾İ
+			
 			Weather weather = Utility.handleWeatherResponse(weatherString);
 			String weatherId = weather.basic.weatherId;
 			String weatherUrl = "http://guolin.tech/api/weather?cityid="

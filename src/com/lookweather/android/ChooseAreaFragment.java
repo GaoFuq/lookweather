@@ -44,34 +44,22 @@ public class ChooseAreaFragment extends Fragment {
 	private ListView listView;
 	private ArrayAdapter<String> adapter;
 
-	// ÒªÏÔÊ¾µÄÊı¾İ
+	// é€‚é…å™¨è¦æ˜¾ç¤ºçš„æ•°æ®
 	private List<String> dataList = new ArrayList<>();
 
-	/*
-	 * Ê¡ÁĞ±í
-	 */
+	
 	private List<Province> provincesList;
-	/*
-	 * ÊĞÁĞ±í
-	 */
+	
 	private List<City> cityList;
-	/*
-	 * ÏØÁĞ±í
-	 */
+	
 	private List<County> countyList;
 
-	/*
-	 * Ñ¡ÖĞµÄÊ¡·İ
-	 */
 	private Province selectedProvince;
 
-	/*
-	 * Ñ¡ÖĞµÄÊĞ
-	 */
 	private City selectedCity;
 
 	/*
-	 * µ±Ç°Ñ¡ÖĞµÄ¼¶±ğ
+	 * å½“å‰é€‰ä¸­çš„çº§åˆ«
 	 */
 	private int currentLevel;
 
@@ -111,6 +99,7 @@ public class ChooseAreaFragment extends Fragment {
 						Intent inten = new Intent(getActivity(),
 								WeatherActivity.class);
 						inten.putExtra("weather_id", weatherId);
+						
 						startActivity(inten);
 						getActivity().finish();
 					} else if (getActivity() instanceof WeatherActivity) {
@@ -140,11 +129,11 @@ public class ChooseAreaFragment extends Fragment {
 	}
 
 	/*
-	 * ²éÑ¯È«¹úËùÓĞµÄÊ¡£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éÑ¯µ½£¬ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
+	 * æŸ¥è¯¢çœ
 	 */
 	private void queryProvinces() {
 		// TODO Auto-generated method stub
-		tv_title.setText("ÖĞ¹ú");
+		tv_title.setText("ä¸­å›½");
 		bt_back.setVisibility(View.GONE);
 		provincesList = DataSupport.findAll(Province.class);
 		if (provincesList.size() > 0) {
@@ -162,7 +151,7 @@ public class ChooseAreaFragment extends Fragment {
 	}
 
 	/*
-	 * ²éÑ¯È«¹úËùÓĞµÄÊĞ£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éÑ¯µ½£¬ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
+	 * æŸ¥è¯¢å¸‚
 	 */
 	private void queryCities() {
 		// TODO Auto-generated method stub
@@ -171,11 +160,11 @@ public class ChooseAreaFragment extends Fragment {
 		cityList = DataSupport.where("provinceid=?",
 				String.valueOf(selectedProvince.getId())).find(City.class);
 		if (cityList.size() > 0) {
-			dataList.clear();// Çå¿ÕListViewÖ®Ç°ÏÔÊ¾µÄÊı¾İ
+			dataList.clear();// æ¸…ç©ºListViewé‡Œé¢çš„æ•°æ®
 			for (City city : cityList) {
-				dataList.add(city.getCityName());// °Ñµ±Ç°ÒªÏÔÊ¾µÄÊı¾İÌí¼Óµ½ListViewÖĞ
+				dataList.add(city.getCityName());//å†æ·»åŠ å½“å‰è¦æ˜¾ç¤ºçš„æ•°æ®åˆ°ListViewä¸­
 			}
-			adapter.notifyDataSetChanged();// Ë¢ĞÂListView
+			adapter.notifyDataSetChanged();//åˆ·æ–°ListView
 			listView.setSelection(0);
 			currentLevel = LEVEL_CITY;
 		} else {
@@ -186,7 +175,7 @@ public class ChooseAreaFragment extends Fragment {
 	}
 
 	/*
-	 * ²éÑ¯È«¹úËùÓĞµÄÏØ£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éÑ¯µ½£¬ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
+	 * æŸ¥è¯¢å¿
 	 */
 	private void queryCountis() {
 		// TODO Auto-generated method stub
@@ -212,7 +201,7 @@ public class ChooseAreaFragment extends Fragment {
 	}
 
 	/*
-	 * ¸ù¾İ´«ÈëµÄµØÖ·ºÍÀàĞÍ´Ó·şÎñÆ÷ÉÏ²éÑ¯Ê¡ÊĞÏØµÄÊı¾İ
+	 * æ ¹æ®é€‰ä¸­çš„çº§åˆ«ï¼Œä»æœåŠ¡å™¨æŸ¥è¯¢æ•°æ®
 	 */
 	private void queryFromService(String address, final String type) {
 		// TODO Auto-generated method stub
@@ -220,7 +209,7 @@ public class ChooseAreaFragment extends Fragment {
 		HttpUtil.sendOkHttpRequest(address, new Callback() {
 
 			@Override
-			// ²éÑ¯³É¹¦µÄ»Øµ÷·½·¨
+			// å½“æŸ¥è¯¢æˆåŠŸæ—¶çš„å›è°ƒæ–¹æ³•
 			public void onResponse(Call call, Response response)
 					throws IOException {
 				// TODO Auto-generated method stub
@@ -255,7 +244,7 @@ public class ChooseAreaFragment extends Fragment {
 			}
 
 			@Override
-			// ²éÑ¯Ê§°ÜÊ±µÄ»Øµ÷·½·¨
+			//å½“æŸ¥è¯¢å¤±è´¥æ—¶çš„å›è°ƒæ–¹æ³•
 			public void onFailure(Call arg0, IOException arg1) {
 				// TODO Auto-generated method stub
 				getActivity().runOnUiThread(new Runnable() {
@@ -264,7 +253,7 @@ public class ChooseAreaFragment extends Fragment {
 					public void run() {
 						// TODO Auto-generated method stub
 						closeProgressDialog();
-						Toast.makeText(getActivity(), "Çë¼ì²éÍøÂç",
+						Toast.makeText(getActivity(), "è¯·æ£€æŸ¥ç½‘ç»œ",
 								Toast.LENGTH_SHORT).show();
 					}
 				});
@@ -276,8 +265,8 @@ public class ChooseAreaFragment extends Fragment {
 		// TODO Auto-generated method stub
 		if (progressDialog == null) {
 			progressDialog = new ProgressDialog(getActivity());
-			progressDialog.setTitle("ÄãºÃ~");
-			progressDialog.setMessage("Å¬Á¦¼ÓÔØÖĞ...");
+			progressDialog.setTitle("ä½ å¥½~");
+			progressDialog.setMessage("åŠªåŠ›åŠ è½½ä¸­...");
 			progressDialog.setCanceledOnTouchOutside(false);
 		}
 		progressDialog.show();

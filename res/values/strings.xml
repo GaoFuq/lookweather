@@ -7,4 +7,8 @@
  <string name="weather_aqi_number">AQI指数</string>   
   <string name="weather_aqi_pm25_number">PM2.5指数</string> 
    <string name="weather_suggestion_text">生活建议</string> 
+ 
+   
+ <string name="author_link">作者：https://github.com/GaoFuq</string> 
+   <string name="data_source">数据来源：https://www.heweather.com</string> 
 </resources>

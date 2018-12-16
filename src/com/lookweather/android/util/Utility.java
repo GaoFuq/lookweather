@@ -16,7 +16,7 @@ import android.util.Log;
 public class Utility {
 
 	/*
-	 * ½âÎöºÍ´¦Àí·şÎñÆ÷·µ»ØµÄÊ¡¼¶Êı¾İ
+	 *è§£æè¿”å›çš„çœæ•°æ®
 	 */
 	public static boolean handleProvinceResponse(String response){
 		if(!TextUtils.isEmpty(response)){
@@ -38,7 +38,7 @@ public class Utility {
 	}
 
 	/*
-	 * ½âÎöºÍ´¦Àí·şÎñÆ÷·µ»ØµÄÊĞ¼¶Êı¾İ
+	 * è§£æè¿”å›çš„å¸‚æ•°æ®
 	 */
 	public static boolean handleCityResponse(String response,int provinceId){
 		if(!TextUtils.isEmpty(response)){
@@ -61,7 +61,7 @@ public class Utility {
 	}
 	
 	/*
-	 * ½âÎöºÍ´¦Àí·şÎñÆ÷·µ»ØµÄÏØ¼¶Êı¾İ
+	 * è§£æè¿”å›çš„å¿æ•°æ®
 	 */
 	public static boolean handleCountyResponse(String response,int cityId){
 		if(!TextUtils.isEmpty(response)){
@@ -84,7 +84,7 @@ public class Utility {
 	}
 	
 	/*
-	 * ½«·µ»ØµÄJSONÊı¾İ½âÎö³ÉWeatherÊµÌåÀà
+	 * è§£æè¿”å›çš„å¤©æ°”æ•°æ®
 	 */
 	public static Weather handleWeatherResponse(String response){
 		try{
@@ -93,7 +93,7 @@ public class Utility {
 			String weatherContent=jsonArray.getJSONObject(0).toString();
 			//Log.d("weatherContent",weatherContent );
 			Weather weather=new Gson().fromJson(weatherContent, Weather.class);
-			Log.d("½âÎöweather", weather.basic.cityName);
+			//Log.d("weather", weather.basic.cityName);
 			return weather;
 			
 		}catch(Exception e){

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 public class Weather {
 
 	/*
-	 * ·µ»Ø½á¹û×´Ì¬Âë
+	 * è¿”å›çš„çŠ¶æ€ç 
 	 */
 	public String status;
 	
@@ -21,9 +21,10 @@ public class Weather {
 	
 	
 	/*
-	 * Ã¿ÌìÌìÆøÊı¾İµÄ¼¯ºÏ¡£
-	 * ¼¯ºÏµÄÒ»¸öÔªËØ´ú±íÒ»ÌìµÄÌìÆø¡£
-	 * Ò»ÌìµÄÌìÆø£¨Ò»¸öÔªËØ£©°üº¬ÉÏÃæµÄ5´ó°æ¿é¡£
+	 * æ¯æ—¥å¤©æ°”é¢„æµ‹
+	 * æ˜¯ä¸€ä¸ªæ•°ç»„ï¼Œè¿™é‡Œç”¨Listé›†åˆæ¥ä½œä¸ºå®¹å™¨
+	 * é›†åˆé‡Œé¢æ¯ä¸€ä¸ªå…ƒç´ éƒ½åŒ…å«äº† Basic,AQI,Now,Suggestion
+	 * 
 	 */	
 	@SerializedName("daily_forecast")
 	public List<Forecast> forecastList;

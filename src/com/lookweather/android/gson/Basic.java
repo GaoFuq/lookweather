@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class Basic {
 	
 	@SerializedName("city")
-	public String cityName;//Ê¹JSON×Ö¶ÎÓëJava×Ö¶Î½¨Á¢Ó³Éä
+	public String cityName;//ä½¿JSONæ•°æ®å’ŒJavaç›¸æ˜ å°„
 
 	@SerializedName("id")
 	public String weatherId;
